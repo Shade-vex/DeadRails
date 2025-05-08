@@ -1490,20 +1490,27 @@ local GunToggle = Tabs.Ite:AddToggle("GunToggle", {
 
 -- Biến để lưu trữ hàm toggle
 local toggleFunction = nil
+local gunCoroutine = nil
 
 -- Khi toggle thay đổi trạng thái
 GunToggle:OnChanged(function(Value)
     autoCollectEnabled = Value
     
     if autoCollectEnabled then
-        -- Tải script và lưu hàm vào biến
-        pcall(function()
-            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/sjsnskk/refs/heads/main/pickupgun"))()
-            if _G.ToggleAutoPickupGun then
-                toggleFunction = _G.ToggleAutoPickupGun
-                toggleFunction(true) -- Kích hoạt
-            end
+        -- Sử dụng coroutine để chạy script không bị nghẽn
+        gunCoroutine = coroutine.create(function()
+            pcall(function()
+                loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/sjsnskk/refs/heads/main/pickupgun"))()
+                
+                if _G.ToggleAutoPickupGun then
+                    toggleFunction = _G.ToggleAutoPickupGun
+                    toggleFunction(true) -- Kích hoạt
+                else
+                    warn("⚠️ Không tìm thấy hàm _G.ToggleAutoPickupGun!")
+                end
+            end)
         end)
+        coroutine.resume(gunCoroutine)
     else
         if toggleFunction then
             toggleFunction(false) -- Tắt nếu toggle chuyển sang false
