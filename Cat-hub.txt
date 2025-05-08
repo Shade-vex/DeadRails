@@ -1580,3 +1580,140 @@ end)
 
 
 
+
+
+        Tabs.Ite:AddSection("↳ Brings (Buggy)")
+
+        Tabs.Ite:AddButton({
+            Title = "Collect Snake Oil",
+            Callback = function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then
+                    return warn("[Leaked Skull HUB] Character not found!")
+                end
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                if not hrp then
+                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
+                end
+                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
+                if not runtimeItems then
+                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
+                end
+
+                -- Move all Bandages to player
+                for _, item in ipairs(runtimeItems:GetChildren()) do
+                    if item:IsA("Model") and item.Name == "Snake Oil" then
+                        local primaryPart = item.PrimaryPart or item:FindFirstChildOfClass("Part")
+                        if primaryPart then
+                            primaryPart.CFrame = hrp.CFrame
+                        end
+                    end
+                end
+                local sixthItem = runtimeItems:GetChildren()[6]
+                local fifthItem = RuntimeItems:GetChildren()[5]
+                if fifthItem and fifthItem:IsA("Model") and fifthItem.Name == "Snake Oil" then
+                    local primaryPart = fifthItem.PrimaryPart or fifthItem:FindFirstChildOfClass("Part")
+                    if primaryPart then
+                        primaryPart.CFrame = hrp.CFrame
+                    end
+                elseif sixthItem and sixthItem:IsA("Model") and sixthItem.Name == "Snake Oil" then
+                    local primaryPart = sixthItem.PrimaryPart or sixthItem:FindFirstChildOfClass("Part")
+                    if primaryPart then
+                        primaryPart.CFrame = hrp.CFrame
+                    end
+                end
+            end
+        })
+
+        Tabs.Ite:AddButton({
+            Title = "Collect Bandage(s)",
+            Callback = function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+                if not character then
+                    return warn("[Leaked Skull HUB] Character not found!")
+                end
+                local hrp = character:FindFirstChild("HumanoidRootPart")
+                if not hrp then
+                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
+                end
+                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
+                if not runtimeItems then
+                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
+                end
+
+                -- Move all Bandages to player
+                for _, item in ipairs(runtimeItems:GetChildren()) do
+                    if item:IsA("Model") and item.Name == "Bandage" then
+                        local primaryPart = item.PrimaryPart or item:FindFirstChildOfClass("Part")
+                        if primaryPart then
+                            primaryPart.CFrame = hrp.CFrame
+                        end
+                    end
+                end
+                local sixthItem = runtimeItems:GetChildren()[6]
+                local fifthItem = RuntimeItems:GetChildren()[5]
+                if sixthItem and sixthItem:IsA("Model") and sixthItem.Name == "Bandage" then
+                    local primaryPart = sixthItem.PrimaryPart or sixthItem:FindFirstChildOfClass("Part")
+                    if primaryPart then
+                        primaryPart.CFrame = hrp.CFrame
+                    end
+                elseif fifthItem and fifthItem:IsA("Model") and fifthItem.Name == "Bandage" then
+                    local primaryPart = fifthItem.PrimaryPart or fifthItem:FindFirstChildOfClass("Part")
+                    if primaryPart then
+                        primaryPart.CFrame = hrp.CFrame
+                    end
+                end
+
+            end
+        })
+
+        Tabs.Ite:AddButton({
+            Title = "Collect Ammo(s)",
+            Callback = function()
+                local player = game.Players.LocalPlayer
+                local character = player.Character
+
+                if not character then
+                    return warn("[Leaked Skull HUB] Character not found!")
+                end
+
+                local hrp = character:FindFirstChild("[Leaked Skull HUB] HumanoidRootPart")
+                if not hrp then
+                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
+                end
+
+                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
+                if not runtimeItems then
+                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
+                end
+
+                -- Function to teleport a model
+                local function teleportModel(model)
+                    local primaryPart = model.PrimaryPart or model:FindFirstChildOfClass("Part")
+                    if primaryPart then
+                        primaryPart.CFrame = hrp.CFrame
+                    end
+                end
+
+                -- Iterate through RuntimeItems
+                for _, item in ipairs(runtimeItems:GetChildren()) do
+                    if item:IsA("Model") then
+                        local itemName = item.Name:lower()
+
+                        -- Check if the Model's name contains "Ammo"
+                        if string.find(itemName, "ammo") then
+                            teleportModel(item)
+                        end
+                    end
+                end
+            end
+        })
+    else
+        Tabs.Ite:AddParagraph({
+            Title = "Note",
+            Content = "Join the main game to load full this tab!"
+        })
+    end
+end  
