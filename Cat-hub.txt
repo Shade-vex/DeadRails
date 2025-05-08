@@ -1440,64 +1440,6 @@ end)
 
 
 
----- collect bond 
-
-local AutoBToggle = Tabs.Ite:AddToggle("AutoBToggle", {Title = "Auto Pickup Bond", Default = false})
-
-local bondRemoteCandidates = {
-    ReplicatedStorage:FindFirstChild("Packages") and ReplicatedStorage.Packages:FindFirstChild("RemotePromise") and ReplicatedStorage.Packages.RemotePromise:FindFirstChild("Remotes") and ReplicatedStorage.Packages.RemotePromise.Remotes:FindFirstChild("C_ActivateObject"),
-    ReplicatedStorage:FindFirstChild("Packages") and ReplicatedStorage.Packages:FindFirstChild("ActivateObjectClient"),
-    ReplicatedStorage:FindFirstChild("ActivateObject"),
-    ReplicatedStorage:FindFirstChild("Interact"),
-    ReplicatedStorage:FindFirstChild("C_Interact")
-}
-
-local bondRemote = nil
-for _, r in ipairs(bondRemoteCandidates) do
-    if r then
-        bondRemote = r
-        break
-    end
-end
-
-local bondConnection
-
-local function collectBonds()
-    local player = Players.LocalPlayer
-    local character = player.Character
-    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
-
-    local bonds = {}
-    for _, item in ipairs(Workspace:GetDescendants()) do
-        if item.Name == "Bond" or item.Name == "BondCalculated" then
-            table.insert(bonds, item)
-        end
-    end
-
-    for _, bond in ipairs(bonds) do
-        -- Dùng pcall tránh lỗi
-        pcall(function() bondRemote:FireServer(bond) end)
-        task.wait(0.1)
-    end
-end
-
-AutoBToggle:OnChanged(function(Value)
-    if Value then
-        if not bondRemote then
-            warn("Không tìm thấy remote để nhặt Bond!")
-            return
-        end
-        bondConnection = RunService.Heartbeat:Connect(function()
-            collectBonds()
-        end)
-    else
-        if bondConnection then
-            bondConnection:Disconnect()
-            bondConnection = nil
-        end
-    end
-end)
-
 
 
 
