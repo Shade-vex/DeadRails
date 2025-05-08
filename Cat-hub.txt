@@ -2340,7 +2340,7 @@ do
     
         local StarterGui = game:GetService("StarterGui")
         Fluent:Notify({
-            Title = "Leaked Skull HUB",
+            Title = "Hutao HUB",
             Content = "Bank : " .. is,
             SubContent = "Checked for bank...",
             Duration = 15
@@ -2349,7 +2349,7 @@ do
         if bank then
             local valute = bank.Vault.Combination.Value
             Fluent:Notify({
-                Title = "Leaked Skull HUB",
+                Title = "Hutao HUB",
                 Content = "Bank Combination",
                 SubContent = "Combination is: " .. valute,
                 Duration = 15
@@ -2362,7 +2362,7 @@ do
     
         local StarterGui = game:GetService("StarterGui")
         Fluent:Notify({
-            Title = "Leaked Skull HUB",
+            Title = "Hutao HUB",
             Content = "Structure {" .. child.Name .. "}",
             SubContent = "New building has spawned!",
             Duration = 15
@@ -2379,7 +2379,7 @@ do
     
         local StarterGui = game:GetService("StarterGui")
         Fluent:Notify({
-            Title = "Leaked Skull HUB",
+            Title = "Hutao HUB",
             Content = "Unicorn Spawned!",
             Duration = 15
         })
@@ -2511,7 +2511,7 @@ do
             local function unlockCamera()
                 if player.CameraMode == Enum.CameraMode.Classic and player.CameraMaxZoomDistance >= 20 then
                     Fluent:Notify({
-                        Title = "Leaked Skull HUB",
+                        Title = "Hutao HUB",
                         Content = "Camera is already unlocked!",
                         Duration = 3
                     })
@@ -2523,7 +2523,7 @@ do
                 camera.CameraSubject = player.Character and player.Character:FindFirstChild("Humanoid") or camera.CameraSubject
                 camera.CameraType = Enum.CameraType.Custom
                 Fluent:Notify({
-                    Title = "Leaked Skull HUB",
+                    Title = "Hutao HUB",
                     Content = "Unlocked third-person view!",
                     SubContent = "Zoom camera out.",
                     Duration = 10
@@ -2956,14 +2956,14 @@ do
         getgenv().antiAfkEnabled = Value
         if Value then
             Fluent:Notify({
-                Title = "Leaked Skull HUB",
+                Title = "Hutao HUB",
                 Content = "Anti idle is enabled!",
                 Duration = 5
             })
             startAntiAfk()
         else
             Fluent:Notify({
-                Title = "Leaked Skull HUB",
+                Title = "Hutao HUB",
                 Content = "Anti idle is disabled!",
                 Duration = 5
             })
@@ -2991,13 +2991,13 @@ loadstring(game:HttpGet('https://raw.githubusercontent.com/hungquan99/SkullHub/m
             end)
         end)
         Fluent:Notify({
-            Title = "Leaked Skull HUB",
+            Title = "Hutao HUB",
             Content = "Auto execute is enabled!",
             Duration = 5
         })
     else
         Fluent:Notify({
-            Title = "Leaked Skull HUB",
+            Title = "Hutao HUB",
             Content = "Auto execute is disabled!",
             Duration = 5
         })
@@ -3017,8 +3017,8 @@ SaveManager:SetIgnoreIndexes({})
 -- use case for doing it this way:
 -- a script hub could have themes in a global folder
 -- and game configs in a separate folder per game
-InterfaceManager:SetFolder("Leaked Skull HUB")
-SaveManager:SetFolder("Leaked Skull HUB/Dead Rails")
+InterfaceManager:SetFolder("Hutao HUB")
+SaveManager:SetFolder("Hutao HUB/Dead Rails")
 
 InterfaceManager:BuildInterfaceSection(Tabs.Settings)
 SaveManager:BuildConfigSection(Tabs.Settings)
@@ -3026,7 +3026,7 @@ SaveManager:BuildConfigSection(Tabs.Settings)
 -- Select First Tab By Default
 Window:SelectTab(1)
 
-Fluent:Notify({ Title = "Leaked Skull HUB", Content = "Dead Rails script loaded successfully!", Duration = 5 })
+Fluent:Notify({ Title = "Hutao HUB", Content = "Dead Rails script loaded successfully!", Duration = 5 })
 SaveManager:LoadAutoloadConfig()
 
 
