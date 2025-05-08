@@ -1446,40 +1446,34 @@ end)
 
 
 
+local PsoBToggle = Tabs.Ite:AddToggle("PsoBToggle", {
+    Title = "Auto Pickup Snake Oil & Bandage(s)",
+    Default = false
+})
 
-local PsoBToggle = Tabs.Ite:AddToggle("PsoBToggle", {Title = "Auto Pickup Snake Oil & Bandage(s)", Default = false})
 local ReplicatedStorage1 = game:GetService("ReplicatedStorage")
 local RuntimeItems1 = workspace:WaitForChild("RuntimeItems")
 local PickUpTool = ReplicatedStorage1.Remotes.Tool.PickUpTool
-local RunService1 = game:GetService("RunService")
 
 local autoPickupEnabled = false
-local pickupLoop
 
 PsoBToggle:OnChanged(function(Value)
     autoPickupEnabled = Value
+
     if autoPickupEnabled then
-        -- Start auto-pickup loop
-        pickupLoop = RunService1.Heartbeat:Connect(function()
-            for _, itemName in ipairs({"Bandage", "Snake Oil"}) do
-                local item = RuntimeItems1:FindFirstChild(itemName)
-                if item then
-                    PickUpTool:FireServer(item)
+        task.spawn(function()
+            while autoPickupEnabled do
+                for _, itemName in ipairs({"Bandage", "Snake Oil"}) do
+                    local item = RuntimeItems1:FindFirstChild(itemName)
+                    if item then
+                        PickUpTool:FireServer(item)
+                    end
                 end
+                task.wait(0.5) -- Giảm tải, không cần Heartbeat
             end
-            task.wait(0.5) -- Avoid spam
         end)
-    else
-        -- Stop auto-pickup loop
-        if pickupLoop then
-            pickupLoop:Disconnect()
-            pickupLoop = nil
-        end
     end
 end)
-
--- Remove Bond collection logic and button for Bond
--- Removed the AutoBToggle and bond collection code
 
 
 
