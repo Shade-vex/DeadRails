@@ -1440,7 +1440,7 @@ end)
 
 
 
-
+---- collect bond 
 
 local AutoBToggle = Tabs.Ite:AddToggle("AutoBToggle", {Title = "Auto Pickup Bond", Default = false})
 
@@ -1544,67 +1544,42 @@ end)
 
 ----- pickup gun
 
+local autoCollectEnabled = false
 
+-- Tạo Toggle mới để bật/tắt Auto Pickup Gun thông qua link script
+local GunToggle = Tabs.Ite:AddToggle("GunToggle", {
+    Title = "Auto Pickup Gun(s)",
+    Default = false
+})
 
-        local pickUpRemote = game:GetService("ReplicatedStorage").Remotes.Tool.PickUpTool
-        local autoCollectEnabled = false
-        local gunConnection
-        local runtimeItems = workspace:WaitForChild("RuntimeItems")
+-- Biến để lưu trữ hàm toggle
+local toggleFunction = nil
 
-        local gunTypes = {
-            ["Revolver"] = true, ["Shotgun"] = true, ["Rifle"] = true, 
-            ["Navy Revolver"] = true, ["Mauser C96"] = true, ["Bolt Action Rifle"] = true, 
-            ["Electrocutioner"] = true, ["Sawed-Off Shotgun"] = true
-        }
-
-        local GunToggle = Tabs.Ite:AddToggle("GunToggle", {
-            Title = "Auto Pickup Gun(s)",
-            Default = false
-        })
-
-        local function collectGun(gun)
-            if gun and gun:IsA("Model") and gunTypes[gun.Name] then
-                pcall(function()
-                    pickUpRemote:FireServer(gun)
-                end)
-            end
-        end
-
-        local function collectGuns()
-            for _, item in ipairs(runtimeItems:GetChildren()) do
-                collectGun(item)
-            end
-        end
-
-        local function startAutoCollect()
-            if gunConnection then gunConnection:Disconnect() end
-            
-            gunConnection = runtimeItems.ChildAdded:Connect(function(child)
-                if autoCollectEnabled then
-                    task.wait(0.1)
-                    collectGun(child)
-                end
-            end)
-        end
-
-        GunToggle:OnChanged(function(Value)
-            autoCollectEnabled = Value
-            if Value then
-                collectGuns()
-                startAutoCollect()
-            else
-                if gunConnection then
-                    gunConnection:Disconnect()
-                    gunConnection = nil
-                end
+-- Khi toggle thay đổi trạng thái
+GunToggle:OnChanged(function(Value)
+    autoCollectEnabled = Value
+    
+    if autoCollectEnabled then
+        -- Tải script và lưu hàm vào biến
+        pcall(function()
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/sjsnskk/refs/heads/main/pickupgun"))()
+            if _G.ToggleAutoPickupGun then
+                toggleFunction = _G.ToggleAutoPickupGun
+                toggleFunction(true) -- Kích hoạt
             end
         end)
+    else
+        if toggleFunction then
+            toggleFunction(false) -- Tắt nếu toggle chuyển sang false
+        end
+    end
+end)
 
-        runtimeItems.ChildRemoved:Connect(function()
-            if autoCollectEnabled then
-                collectGuns()
-            end
-        end)
+
+
+
+
+---- scan item
 
         Tabs.Ite:AddButton({
             Title = "Scan Item(s)",
@@ -1669,11 +1644,3 @@ end)
 
 
 
-
-
-
-
-
-
-
-               
