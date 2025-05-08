@@ -1581,139 +1581,149 @@ end)
 
 
 
+-- Teleport tab
 
-        Tabs.Ite:AddSection("↳ Brings (Buggy)")
-
-        Tabs.Ite:AddButton({
-            Title = "Collect Snake Oil",
-            Callback = function()
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if not character then
-                    return warn("[Leaked Skull HUB] Character not found!")
-                end
-                local hrp = character:FindFirstChild("HumanoidRootPart")
-                if not hrp then
-                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
-                end
-                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
-                if not runtimeItems then
-                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
-                end
-
-                -- Move all Bandages to player
-                for _, item in ipairs(runtimeItems:GetChildren()) do
-                    if item:IsA("Model") and item.Name == "Snake Oil" then
-                        local primaryPart = item.PrimaryPart or item:FindFirstChildOfClass("Part")
-                        if primaryPart then
-                            primaryPart.CFrame = hrp.CFrame
-                        end
-                    end
-                end
-                local sixthItem = runtimeItems:GetChildren()[6]
-                local fifthItem = RuntimeItems:GetChildren()[5]
-                if fifthItem and fifthItem:IsA("Model") and fifthItem.Name == "Snake Oil" then
-                    local primaryPart = fifthItem.PrimaryPart or fifthItem:FindFirstChildOfClass("Part")
-                    if primaryPart then
-                        primaryPart.CFrame = hrp.CFrame
-                    end
-                elseif sixthItem and sixthItem:IsA("Model") and sixthItem.Name == "Snake Oil" then
-                    local primaryPart = sixthItem.PrimaryPart or sixthItem:FindFirstChildOfClass("Part")
-                    if primaryPart then
-                        primaryPart.CFrame = hrp.CFrame
-                    end
-                end
-            end
-        })
-
-        Tabs.Ite:AddButton({
-            Title = "Collect Bandage(s)",
-            Callback = function()
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-                if not character then
-                    return warn("[Leaked Skull HUB] Character not found!")
-                end
-                local hrp = character:FindFirstChild("HumanoidRootPart")
-                if not hrp then
-                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
-                end
-                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
-                if not runtimeItems then
-                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
-                end
-
-                -- Move all Bandages to player
-                for _, item in ipairs(runtimeItems:GetChildren()) do
-                    if item:IsA("Model") and item.Name == "Bandage" then
-                        local primaryPart = item.PrimaryPart or item:FindFirstChildOfClass("Part")
-                        if primaryPart then
-                            primaryPart.CFrame = hrp.CFrame
-                        end
-                    end
-                end
-                local sixthItem = runtimeItems:GetChildren()[6]
-                local fifthItem = RuntimeItems:GetChildren()[5]
-                if sixthItem and sixthItem:IsA("Model") and sixthItem.Name == "Bandage" then
-                    local primaryPart = sixthItem.PrimaryPart or sixthItem:FindFirstChildOfClass("Part")
-                    if primaryPart then
-                        primaryPart.CFrame = hrp.CFrame
-                    end
-                elseif fifthItem and fifthItem:IsA("Model") and fifthItem.Name == "Bandage" then
-                    local primaryPart = fifthItem.PrimaryPart or fifthItem:FindFirstChildOfClass("Part")
-                    if primaryPart then
-                        primaryPart.CFrame = hrp.CFrame
-                    end
-                end
-
-            end
-        })
-
-        Tabs.Ite:AddButton({
-            Title = "Collect Ammo(s)",
-            Callback = function()
-                local player = game.Players.LocalPlayer
-                local character = player.Character
-
-                if not character then
-                    return warn("[Leaked Skull HUB] Character not found!")
-                end
-
-                local hrp = character:FindFirstChild("[Leaked Skull HUB] HumanoidRootPart")
-                if not hrp then
-                    return warn("[Leaked Skull HUB] HumanoidRootPart not found!")
-                end
-
-                local runtimeItems = workspace:FindFirstChild("RuntimeItems")
-                if not runtimeItems then
-                    return warn("[Leaked Skull HUB] RuntimeItems folder not found!")
-                end
-
-                -- Function to teleport a model
-                local function teleportModel(model)
-                    local primaryPart = model.PrimaryPart or model:FindFirstChildOfClass("Part")
-                    if primaryPart then
-                        primaryPart.CFrame = hrp.CFrame
-                    end
-                end
-
-                -- Iterate through RuntimeItems
-                for _, item in ipairs(runtimeItems:GetChildren()) do
-                    if item:IsA("Model") then
-                        local itemName = item.Name:lower()
-
-                        -- Check if the Model's name contains "Ammo"
-                        if string.find(itemName, "ammo") then
-                            teleportModel(item)
-                        end
-                    end
-                end
-            end
+do
+    if game.PlaceId == 116495829188952 then
+        Tabs.TpT:AddParagraph({
+            Title = "Note",
+            Content = "Join main game to use this feature!"
         })
     else
-        Tabs.Ite:AddParagraph({
-            Title = "Note",
-            Content = "Join the main game to load full this tab!"
+        Tabs.TpT:AddSection("↳ End Game")
+        local CtimeToggle = Tabs.TpT:AddToggle("CtimeToggle", {
+            Title = "Countdown",
+            Description = "10 minutes countdown",
+            Default = false
         })
-    end
-end  
+        
+        local CountdownGui = Instance.new("ScreenGui")
+        CountdownGui.Name = "CountdownUI"
+        CountdownGui.ResetOnSpawn = false
+        CountdownGui.IgnoreGuiInset = true
+        CountdownGui.Parent = game:GetService("CoreGui") -- or PlayerGui if needed
+        
+        local Frame = Instance.new("Frame")
+        Frame.Size = UDim2.new(0, 150, 0, 50)
+        Frame.Position = UDim2.new(0.5, -75, 0.15, 0)
+        Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+        Frame.BackgroundTransparency = 0.1
+        Frame.BorderSizePixel = 0
+        Frame.AnchorPoint = Vector2.new(0.5, 0)
+        Frame.Active = true
+        Frame.Draggable = true
+        Frame.Parent = CountdownGui
+        Frame.Visible = false
+        
+        local UICorner = Instance.new("UICorner")
+        UICorner.CornerRadius = UDim.new(0, 10)
+        UICorner.Parent = Frame
+        
+        local UIStroke = Instance.new("UIStroke")
+        UIStroke.Color = Color3.fromRGB(255, 255, 255)
+        UIStroke.Thickness = 1.5
+        UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        UIStroke.Parent = Frame
+        
+        local Label = Instance.new("TextLabel")
+        Label.Size = UDim2.new(1, 0, 1, 0)
+        Label.BackgroundTransparency = 1
+        Label.Text = "10:00"
+        Label.Font = Enum.Font.FredokaOne
+        Label.TextScaled = true
+        Label.TextColor3 = Color3.fromRGB(255, 255, 255)
+        Label.Parent = Frame
+        
+        local countdownTime = 10 * 60 -- 10 minutes
+        local running = true
+        
+        task.spawn(function()
+            while countdownTime > 0 and running do
+                local minutes = math.floor(countdownTime / 60)
+                local seconds = countdownTime % 60
+                Label.Text = string.format("%02d:%02d", minutes, seconds)
+                task.wait(1)
+                countdownTime -= 1
+            end
+        
+            Label.Text = "00:00"
+        end)
+        
+        CtimeToggle:OnChanged(function(Value)
+            Frame.Visible = Value
+        end)    
+
+
+
+
+
+
+        Tabs.TpT:AddButton({
+            Title = "TP To Final Destination",
+            Callback = function()
+                local Player = game.Players.LocalPlayer
+                if not Player.Character then
+                    Player.CharacterAdded:Wait()
+                end
+                local Character = Player.Character
+                if Character and Character:FindFirstChild("HumanoidRootPart") then
+                    local HRP = Character.HumanoidRootPart
+                    local HUM = Character:FindFirstChildOfClass("Humanoid")
+                    
+                    -- Store original values
+                    local originalWalkSpeed = HUM.WalkSpeed
+                    
+                    -- Disable any movement to prevent teleporting back
+                    HUM.WalkSpeed = 0
+                    
+                    -- First teleport
+                    HRP.CFrame = CFrame.new(-424.45, 26.06, -49040.66)
+                    HRP.Anchored = true
+                    
+                    task.wait(0.5)
+                    -- Execute anti-teleport measures
+                    for _, part in pairs(Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Velocity = Vector3.new(0, 0, 0)
+                        end
+                    end
+                    
+                    task.wait(1)
+                    -- Second teleport
+                    HRP.CFrame = CFrame.new(-447.38, 26.08, -48747.68)
+                    
+                    task.wait(0.5)
+                    -- Execute anti-teleport measures
+                    for _, part in pairs(Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Velocity = Vector3.new(0, 0, 0)
+                        end
+                    end
+                    
+                    task.wait(1)
+                    -- Third teleport
+                    HRP.CFrame = CFrame.new(-312.17, 26.08, -48747.68)
+                    
+                    task.wait(0.5)
+                    -- Execute anti-teleport measures
+                    for _, part in pairs(Character:GetDescendants()) do
+                        if part:IsA("BasePart") then
+                            part.Velocity = Vector3.new(0, 0, 0)
+                        end
+                    end
+                    
+                    task.wait(1)
+                    -- Fourth teleport
+                    HRP.CFrame = CFrame.new(-424.45, 26.06, -49040.66)
+                    
+                    -- Wait and release character
+                    task.wait(2)
+                    HRP.Anchored = false
+                    HUM.WalkSpeed = originalWalkSpeed
+                end
+            end
+        })
+
+
+
+
