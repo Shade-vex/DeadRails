@@ -1,0 +1,118 @@
+-- 🟢 DRAGGABLE UI BUTTON WITH ENHANCED CLICK AND HOVER ANIMATIONS
+local UserInputService = game:GetService("UserInputService")
+local CoreGui = game:GetService("CoreGui")
+local TweenService = game:GetService("TweenService")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+-- Kiểm tra nếu đã tồn tại thì xóa
+local ExistingUI = CoreGui:FindFirstChild("SkullHubMinimizeUI")
+if ExistingUI then
+    ExistingUI:Destroy()
+end
+
+-- Tạo ScreenGui chứa Button
+local DragUI = Instance.new("ScreenGui")
+DragUI.Name = "SkullHubMinimizeUI"
+DragUI.ResetOnSpawn = false
+DragUI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+DragUI.Parent = CoreGui
+
+-- Tạo Button
+local Button = Instance.new("ImageButton")
+Button.Parent = DragUI
+Button.Size = UDim2.new(0, 50, 0, 50)
+Button.Position = UDim2.new(0, 10, 1, -85)
+Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+Button.BackgroundTransparency = 0.3
+Button.BorderSizePixel = 0
+Button.ClipsDescendants = true
+Button.Image = "rbxassetid://95183678717613" -- Thay bằng ảnh của bạn
+Button.ScaleType = Enum.ScaleType.Fit
+Button.Active = true
+Button.ZIndex = 1000
+
+-- Bo góc
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(1, 0)
+UICorner.Parent = Button
+
+-- Tween Info
+local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+-- Function to simulate RightShift key press
+local function SimulateKeyPress()
+    pcall(function()
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.RightShift, false, game)
+        task.wait(0.1)
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.RightShift, false, game)
+    end)
+end
+
+-- Click Animation & UI Toggle (Only if NOT dragged too much)
+local isDragging = false
+local dragThreshold = 10
+
+Button.MouseButton1Click:Connect(function()
+    if isDragging then return end
+
+    -- Animation
+    local tween = TweenService:Create(Button, tweenInfo, {
+        BackgroundTransparency = 0.5,
+        Size = UDim2.new(0, 45, 0, 45),
+        Rotation = 5
+    })
+    tween:Play()
+    task.wait(0.1)
+    local tweenBack = TweenService:Create(Button, tweenInfo, {
+        BackgroundTransparency = 0.3,
+        Size = UDim2.new(0, 50, 0, 50),
+        Rotation = 0
+    })
+    tweenBack:Play()
+
+    -- Ẩn/Hiện giao diện GUI
+    SimulateKeyPress()
+end)
+
+-- Kéo thả di chuyển
+local dragging, dragStart, startPos
+
+local function StartDrag(input)
+    isDragging = false
+    dragging = true
+    dragStart = input.Position
+    startPos = Button.Position
+
+    input.Changed:Connect(function()
+        if input.UserInputState == Enum.UserInputState.End then
+            dragging = false
+        end
+    end)
+end
+
+local function OnDrag(input)
+    if dragging then
+        local delta = input.Position - dragStart
+        if delta.Magnitude > dragThreshold then
+            isDragging = true
+        end
+        Button.Position = UDim2.new(
+            startPos.X.Scale,
+            startPos.X.Offset + delta.X,
+            startPos.Y.Scale,
+            startPos.Y.Offset + delta.Y
+        )
+    end
+end
+
+Button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        StartDrag(input)
+    end
+end)
+
+Button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then
+        OnDrag(input)
+    end
+end)
