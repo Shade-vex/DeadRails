@@ -1583,75 +1583,6 @@ end)
 
 -- Teleport tab
 
-do
-    if game.PlaceId == 116495829188952 then
-        Tabs.TpT:AddParagraph({
-            Title = "Note",
-            Content = "Join main game to use this feature!"
-        })
-    else
-        Tabs.TpT:AddSection("↳ End Game")
-        local CtimeToggle = Tabs.TpT:AddToggle("CtimeToggle", {
-            Title = "Countdown",
-            Description = "10 minutes countdown",
-            Default = false
-        })
-        
-        local CountdownGui = Instance.new("ScreenGui")
-        CountdownGui.Name = "CountdownUI"
-        CountdownGui.ResetOnSpawn = false
-        CountdownGui.IgnoreGuiInset = true
-        CountdownGui.Parent = game:GetService("CoreGui") -- or PlayerGui if needed
-        
-        local Frame = Instance.new("Frame")
-        Frame.Size = UDim2.new(0, 150, 0, 50)
-        Frame.Position = UDim2.new(0.5, -75, 0.15, 0)
-        Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-        Frame.BackgroundTransparency = 0.1
-        Frame.BorderSizePixel = 0
-        Frame.AnchorPoint = Vector2.new(0.5, 0)
-        Frame.Active = true
-        Frame.Draggable = true
-        Frame.Parent = CountdownGui
-        Frame.Visible = false
-        
-        local UICorner = Instance.new("UICorner")
-        UICorner.CornerRadius = UDim.new(0, 10)
-        UICorner.Parent = Frame
-        
-        local UIStroke = Instance.new("UIStroke")
-        UIStroke.Color = Color3.fromRGB(255, 255, 255)
-        UIStroke.Thickness = 1.5
-        UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-        UIStroke.Parent = Frame
-        
-        local Label = Instance.new("TextLabel")
-        Label.Size = UDim2.new(1, 0, 1, 0)
-        Label.BackgroundTransparency = 1
-        Label.Text = "10:00"
-        Label.Font = Enum.Font.FredokaOne
-        Label.TextScaled = true
-        Label.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Label.Parent = Frame
-        
-        local countdownTime = 10 * 60 -- 10 minutes
-        local running = true
-        
-        task.spawn(function()
-            while countdownTime > 0 and running do
-                local minutes = math.floor(countdownTime / 60)
-                local seconds = countdownTime % 60
-                Label.Text = string.format("%02d:%02d", minutes, seconds)
-                task.wait(1)
-                countdownTime -= 1
-            end
-        
-            Label.Text = "00:00"
-        end)
-        
-        CtimeToggle:OnChanged(function(Value)
-            Frame.Visible = Value
-        end)    
 
 
 
@@ -1724,6 +1655,263 @@ do
             end
         })
 
+
+
+
+
+
+
+Tabs.TpT:AddSection("↳ Train")
+
+Tabs.TpT:AddButton({
+    Title = "TP To Train",
+    Callback = function()
+        pcall(function()
+            -- Tải và chạy script từ link
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/KJ/refs/heads/main/TPtotrain.txt"))()
+        end)
+    end
+})
+
+
+
+
+Tabs.TpT:AddSection("↳ Bases")
+
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gameWorkspace = game:GetService("Workspace") -- Đổi tên tránh ghi đè
+
+local teleportLocations = {
+    ["Spawn"] = CFrame.new(56.6396217, 3.24999976, 29936.3516),
+    ["10 KM"] = CFrame.new(-160.576843, 2.99617577, 19913.252),
+    ["20 KM"] = CFrame.new(-556.92572, 2.98922157, 9956.79883),
+    ["30 KM"] = CFrame.new(-569.779663, 2.99999976, 47.5958443),
+    ["40 KM"] = CFrame.new(-184.494064, 3.14674306, -9899.91797),
+    ["50 KM"] = CFrame.new(55.228714, 3.19885039, -19842.3789),
+    ["60 KM"] = CFrame.new(-199.620743, 3.14927387, -29733.9453),
+    ["70 KM"] = CFrame.new(-577.781921, 3.49909163, -39654.2148),
+}
+
+local function findClosestVehicleSeat(position)
+    local closestSeat = nil
+    local minDistance = math.huge
+
+    for _, seat in ipairs(gameWorkspace:GetDescendants()) do
+        if seat:IsA("VehicleSeat") then
+            local distance = (position - seat.Position).Magnitude
+            if distance < minDistance then
+                minDistance = distance
+                closestSeat = seat
+            end
+        end
+    end
+    return closestSeat
+end
+
+local function teleportToLocation(locationName)
+    local Player = game.Players.LocalPlayer
+    if not Player.Character then
+        Player.CharacterAdded:Wait()
+    end
+    local Character = Player.Character
+    if Character and Character:FindFirstChild("HumanoidRootPart") then
+        local HRP = Character.HumanoidRootPart
+        local HUM = Character:FindFirstChildOfClass("Humanoid")
+        
+        local originalWalkSpeed = HUM.WalkSpeed
+        HUM.WalkSpeed = 0
+        HRP.CFrame = teleportLocations[locationName]
+        HRP.Anchored = true
+
+        task.wait(2)
+
+        local fseat = findClosestVehicleSeat(HRP.Position)
+    
+        if fseat then
+            HRP.CFrame = fseat.CFrame + Vector3.new(0, 3, 0)
+            task.wait(0.15)
+            HRP.Anchored = false
+            task.wait(0.5)
+            fseat:Sit(HUM)
+        else
+            HRP.Anchored = false
+            warn("No seat found near location: " .. locationName)
+        end
+        
+        task.wait(1)
+        HUM.WalkSpeed = originalWalkSpeed
+    end
+end
+
+local dropdownValues = {}
+for locationName, _ in pairs(teleportLocations) do
+    table.insert(dropdownValues, locationName)
+end
+table.sort(dropdownValues)
+
+local selectedLocation = dropdownValues[1]
+local Dropdown = Tabs.TpT:AddDropdown("TeleportDropdown", {
+    Title = "Select Base",
+    Values = dropdownValues,
+    Multi = false,
+    Default = 1,
+})
+
+Dropdown:OnChanged(function(value)
+    selectedLocation = value
+end)
+
+Tabs.TpT:AddButton({
+    Title = "Teleport to Selected Base",
+    Callback = function()
+        if selectedLocation and teleportLocations[selectedLocation] then
+            task.wait(1)
+            teleportToLocation(selectedLocation)
+        else
+            warn("No valid base selected for teleportation.")
+        end
+    end
+})
+
+
+
+
+
+
+
+
+        Tabs.TpT:AddButton({
+            Title = "TP To Tesla Lab",
+            Callback = function()
+                local Player = game.Players.LocalPlayer
+                if not Player.Character then
+                    Player.CharacterAdded:Wait()
+                end
+                local Character = Player.Character
+                if Character and Character:FindFirstChild("HumanoidRootPart") then
+                    local HRP = Character.HumanoidRootPart
+                    local HUM = Character:FindFirstChildOfClass("Humanoid")
+                    
+                    -- Store original values
+                    local originalWalkSpeed = HUM.WalkSpeed
+                    
+                    -- Disable movement temporarily
+                    HUM.WalkSpeed = 0
+                    
+                    -- Step 1: Teleport to Generator model
+                    local Generator = workspace:WaitForChild("TeslaLab"):WaitForChild("Generator")
+                    local modelPosition = Generator:GetPivot().Position
+                    HRP:PivotTo(CFrame.new(modelPosition + Vector3.new(0, 5, 0))) -- Teleport above model
+                    HRP.Anchored = true -- Anchor player
+                    
+                    task.wait(2) -- Wait for server sync
+                    
+                    -- Step 2: Find closest available Chair.Seat in RuntimeItems
+                    local RuntimeItems = workspace:WaitForChild("RuntimeItems")
+                    local function findClosestAvailableSeat()
+                        local closestSeat = nil
+                        local minDistance = math.huge
+                        local playerPos = HRP.Position
+                        
+                        for _, chair in pairs(RuntimeItems:GetChildren()) do
+                            if chair:IsA("Model") and chair.Name == "Chair" then
+                                local seat = chair:FindFirstChild("Seat")
+                                if seat and seat:IsA("Seat") and seat.Occupant == nil then
+                                    local seatPos = seat.Position
+                                    local distance = (seatPos - playerPos).Magnitude
+                                    if distance < minDistance then
+                                        minDistance = distance
+                                        closestSeat = seat
+                                    end
+                                end
+                            end
+                        end
+                        return closestSeat
+                    end
+                    
+                    -- Step 3: Teleport to seat
+                    local seat = findClosestAvailableSeat()
+                    if seat then
+                        HRP.Anchored = true -- Anchor for seat teleport
+                        HRP:PivotTo(seat.CFrame + Vector3.new(0, 3, 0)) -- Position above seat
+                        
+                        -- Unanchor after 0.15 seconds
+                        task.delay(0.15, function()
+                            if HRP and HRP.Anchored then
+                                HRP.Anchored = false
+                            end
+                        end)
+                        
+                        -- Safety unanchor after 0.1 seconds
+                        task.delay(0.1, function()
+                            if HRP and HRP.Anchored then
+                                HRP.Anchored = false
+                            end
+                        end)
+                        
+                        task.wait(0.5)
+                        seat:Sit(HUM) -- Sit on the seat
+                    else
+                        HRP.Anchored = false -- Unanchor if no seat found
+                    end
+                    
+                    -- Restore movement
+                    task.wait(1)
+                    HUM.WalkSpeed = originalWalkSpeed
+                end
+
+            end
+        })
+
+
+
+
+Tabs.TpT:AddButton({
+    Title = "TP To Fast Castle",
+    Callback = function()
+        pcall(function()
+            -- Tải và chạy script từ link
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/KJ/refs/heads/main/FASTCASTLE.txt"))()
+        end)
+    end
+})
+
+
+
+
+Tabs.TpT:AddButton({
+    Title = "TP To Fort",
+    Callback = function()
+        pcall(function()
+            -- Tải và chạy script từ link
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/KJ/refs/heads/main/Tpfort.lua.txt"))()
+        end)
+    end
+})
+
+
+
+Tabs.TpT:AddButton({
+    Title = "TP To Sterling",
+    Callback = function()
+        pcall(function()
+            -- Hook SetCore để chặn thông báo
+            local originalSetCore = game:GetService("StarterGui").SetCore
+            local blocked = {"SendNotification"}
+
+            hookfunction(originalSetCore, function(self, method, ...)
+                if table.find(blocked, method) then
+                    return -- Chặn thông báo xuất hiện
+                end
+                return originalSetCore(self, method, ...)
+            end)
+
+            -- Tải và chạy script từ link
+            loadstring(game:HttpGet("https://raw.githubusercontent.com/Shade-vex/KJ/refs/heads/main/TPsterling.txt"))()
+        end)
+    end
+})
 
 
 
