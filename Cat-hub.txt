@@ -1941,14 +1941,17 @@ Tabs.TpT:AddButton({
 
 
 
-
 -- 🟢 DRAGGABLE UI BUTTON WITH ENHANCED CLICK AND HOVER ANIMATIONS
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
-local VirtualInputManager = game:GetService("VirtualInputManager")
 
-local minimizeUI = Enum.KeyCode.RightShift -- Định nghĩa phím
+-- Đặt phím tắt để ẩn/hiện GUI
+local minimizeUI = Enum.KeyCode.RightShift
+local FluentUI = CoreGui:FindFirstChild("Leaked Skull HUB") -- Tên GUI của bạn
+if not FluentUI then
+    warn("Không tìm thấy GUI với tên 'Leaked Skull HUB'")
+end
 
 -- Xóa UI cũ nếu tồn tại
 local ExistingUI = CoreGui:FindFirstChild("SkullHubMinimizeUI")
@@ -1972,7 +1975,7 @@ Button.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Button.BackgroundTransparency = 0.3
 Button.BorderSizePixel = 0
 Button.ClipsDescendants = true
-Button.Image = "rbxassetid://90508203972003" -- Thay ID ảnh của bạn
+Button.Image = "rbxassetid://12345678" -- Thay ID ảnh của bạn
 Button.ScaleType = Enum.ScaleType.Fit
 Button.Active = true
 Button.ZIndex = 1000
@@ -1985,13 +1988,13 @@ UICorner.Parent = Button
 -- Tween Info
 local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
--- Mô phỏng phím bấm
-local function SimulateKeyPress()
-    pcall(function()
-        VirtualInputManager:SendKeyEvent(true, minimizeUI, false, game)
-        task.wait(0.1)
-        VirtualInputManager:SendKeyEvent(false, minimizeUI, false, game)
-    end)
+-- Ẩn/Hiện GUI
+local isGuiVisible = true
+local function ToggleGUI()
+    if FluentUI then
+        isGuiVisible = not isGuiVisible
+        FluentUI.Enabled = isGuiVisible
+    end
 end
 
 -- Click Animation & UI Toggle
@@ -2013,7 +2016,8 @@ Button.MouseButton1Click:Connect(function()
     })
     tweenBack:Play()
 
-    SimulateKeyPress()
+    -- Ẩn/hiện giao diện GUI
+    ToggleGUI()
 end)
 
 -- Hover Animation
@@ -2025,18 +2029,20 @@ Button.MouseLeave:Connect(function()
     TweenService:Create(Button, tweenInfo, {Size = UDim2.new(0, 50, 0, 50)}):Play()
 end)
 
--- Kéo thả di chuyển
+-- 🟢 Kéo thả di chuyển
 local dragging, dragStart, startPos
 
-local function StartDrag(input)
-    isDragging = false
-    dragging = true
-    dragStart = input.Position
-    startPos = Button.Position
-end
+Button.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        isDragging = false
+        dragging = true
+        dragStart = input.Position
+        startPos = Button.Position
+    end
+end)
 
-local function OnDrag(input)
-    if dragging then
+Button.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement and dragging then
         local delta = input.Position - dragStart
         if delta.Magnitude > 5 then
             isDragging = true
@@ -2048,23 +2054,18 @@ local function OnDrag(input)
             startPos.Y.Offset + delta.Y
         )
     end
-end
-
-Button.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 then
-        StartDrag(input)
-    end
-end)
-
-Button.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement then
-        OnDrag(input)
-    end
 end)
 
 Button.InputEnded:Connect(function(input)
     if input.UserInputState == Enum.UserInputState.End then
         dragging = false
+    end
+end)
+
+-- 🟢 Phím tắt RightShift để ẩn/hiện
+UserInputService.InputBegan:Connect(function(input)
+    if input.KeyCode == minimizeUI then
+        ToggleGUI()
     end
 end)
 
