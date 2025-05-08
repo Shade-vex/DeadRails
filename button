@@ -1,11 +1,13 @@
-
-
 -- 🟢 DRAGGABLE UI BUTTON WITH ENHANCED CLICK AND HOVER ANIMATIONS
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 local TweenService = game:GetService("TweenService")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 
+-- Đặt phím tắt để ẩn/hiện GUI
+local minimizeUI = Enum.KeyCode.RightShift
+
+-- Kiểm tra nếu đã tồn tại thì xóa
 local ExistingUI = CoreGui:FindFirstChild("SkullHubMinimizeUI")
 if ExistingUI then
     ExistingUI:Destroy()
@@ -42,9 +44,11 @@ local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection
 
 -- Function to simulate RightShift key press
 local function SimulateKeyPress()
-    VirtualInputManager:SendKeyEvent(true, minimizeUI, false, game)
-    task.wait(0.1)
-    VirtualInputManager:SendKeyEvent(false, minimizeUI, false, game)
+    pcall(function()
+        VirtualInputManager:SendKeyEvent(true, minimizeUI, false, game)
+        task.wait(0.1)
+        VirtualInputManager:SendKeyEvent(false, minimizeUI, false, game)
+    end)
 end
 
 -- Click Animation & UI Toggle (Only if NOT dragged too much)
