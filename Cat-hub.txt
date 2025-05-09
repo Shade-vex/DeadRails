@@ -8,7 +8,7 @@ local minimizeUI = Enum.KeyCode.RightAlt
 
 -- 🟢 Create Main UI
 local Window = Fluent:CreateWindow({
-    Title = "Hutao hub",
+    Title = "Hutao hub [FREE]",
     SubTitle = "Dead Rails",
     TabWidth = 160,
     Size = UDim2.fromOffset(480, 360),
@@ -19,13 +19,13 @@ local Window = Fluent:CreateWindow({
 
 -- Tabs
 local Tabs = {
-    FarT = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://74754731011279" }),
-    Ma = Window:AddTab({ Title = "Main", Icon = "rbxassetid://74754731011279" }),
-    Ite = Window:AddTab({ Title = "Items", Icon = "rbxassetid://74754731011279" }),
-    TpT = Window:AddTab({ Title = "Teleport", Icon = "rbxassetid://74754731011279" }),
-    Player = Window:AddTab({ Title = "Player", Icon = "rbxassetid://74754731011279" }),
-    Misc = Window:AddTab({ Title = "Misc", Icon = "rbxassetid://74754731011279" }),
-    Settings = Window:AddTab({ Title = "Setting", Icon = "rbxassetid://74754731011279" }),
+    FarT = Window:AddTab({ Title = "Farm", Icon = "rbxassetid://121302760641013" }),
+    Ma = Window:AddTab({ Title = "Main", Icon = "rbxassetid://121302760641013" }),
+    Ite = Window:AddTab({ Title = "Items", Icon = "rbxassetid://121302760641013" }),
+    TpT = Window:AddTab({ Title = "Teleport", Icon = "rbxassetid://121302760641013" }),
+    Player = Window:AddTab({ Title = "Player", Icon = "rbxassetid://121302760641013" }),
+    Misc = Window:AddTab({ Title = "Misc", Icon = "rbxassetid://121302760641013" }),
+    Settings = Window:AddTab({ Title = "Setting", Icon = "rbxassetid://121302760641013" }),
 }
 
 do
